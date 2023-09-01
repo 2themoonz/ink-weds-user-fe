@@ -1,0 +1,13 @@
+# Add files here to ignore them from prettier formatting
+
+/public
+/node_modules
+build
+coverage
+.env
+.next
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+.gitignore
+README.md
