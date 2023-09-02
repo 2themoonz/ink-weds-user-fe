@@ -20,11 +20,7 @@ export function SiteHeader() {
             <CommandMenu />
           </div>
           <nav className="flex items-center">
-            <Link
-              href={siteConfig.links.twitter}
-              target="_blank"
-              rel="noreferrer"
-            >
+            <Link href="/auth/login">
               <div
                 className={cn(
                   buttonVariants({
