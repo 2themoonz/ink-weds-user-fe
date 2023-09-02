@@ -4,8 +4,6 @@ import { fontSans } from "@/lib/fonts";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/providers";
 import { TailwindIndicator } from "@/components/tailwind-indicator";
-import { SiteFooter } from "@/components/site-footer";
-import { SiteHeader } from "@/components/site-header";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -32,11 +30,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <div className="relative flex min-h-screen flex-col">
-            <SiteHeader />
-            <div className="flex-1">{children}</div>
-            <SiteFooter />
-          </div>
+          {children}
           <TailwindIndicator />
         </ThemeProvider>
       </body>

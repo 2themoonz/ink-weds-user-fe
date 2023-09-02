@@ -2,11 +2,11 @@ import Link from "next/link";
 
 import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
-import { CommandMenu } from "@/components/command-menu";
+import { CommandMenu } from "@/components/layouts/command-menu";
 import { Icons } from "@/components/icons";
-import { MainNav } from "@/components/main-nav";
-import { MobileNav } from "@/components/mobile-nav";
-import { ModeToggle } from "@/components/mode-toggle";
+import { MainNav } from "@/components/layouts/main-nav";
+import { MobileNav } from "@/components/layouts/mobile-nav";
+import { ThemeToggle } from "@/components/layouts/theme-toggle";
 import { buttonVariants } from "@/components/ui/button";
 
 export function SiteHeader() {
@@ -36,7 +36,7 @@ export function SiteHeader() {
                 <Icons.avatar className="h-6 w-6 fill-current" />
               </div>
             </Link>
-            <ModeToggle />
+            <ThemeToggle />
           </nav>
         </div>
       </div>
