@@ -1,12 +1,13 @@
 "use client";
 
-import * as React from "react";
-import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
+import * as React from "react";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
 
-import { authSchema } from "@/lib/validations/auth";
+import { Icons } from "@/components/icons";
+import { PasswordInput } from "@/components/password-input";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -17,10 +18,31 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Icons } from "@/components/icons";
-import { PasswordInput } from "@/components/password-input";
+import { awsConfig } from "@/config/aws";
+import { cognitoClient } from "@/lib/aws/cognito";
+import { authSchema } from "@/lib/validations/auth";
+import { InitiateAuthCommand } from "@aws-sdk/client-cognito-identity-provider";
 
 type Inputs = z.infer<typeof authSchema>;
+
+export const signIn = async (email: string, password: string) => {
+  try {
+    const res = await cognitoClient.send(
+      new InitiateAuthCommand({
+        AuthFlow: "USER_PASSWORD_AUTH",
+        ClientId: awsConfig.CLIENT_ID,
+        AuthParameters: {
+          USERNAME: email,
+          PASSWORD: password,
+        },
+      })
+    );
+
+    return res;
+  } catch (ex: any) {
+    console.error(ex);
+  }
+};
 
 export function SignInForm() {
   const router = useRouter();
@@ -36,7 +58,15 @@ export function SignInForm() {
     },
   });
 
-  function onSubmit(data: any) {}
+  function onSubmit(data: any) {
+    startTransition(() => {
+      signIn(data.email, data.password).then((res) => {
+        if (res?.AuthenticationResult) {
+          router.push("/");
+        }
+      });
+    });
+  }
 
   return (
     <Form {...form}>

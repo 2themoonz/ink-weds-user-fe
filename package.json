@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@aws-sdk/client-cognito-identity-provider": "^3.405.0",
+    "@aws-sdk/credential-providers": "^3.405.0",
     "@hookform/resolvers": "^3.3.1",
     "@radix-ui/react-alert-dialog": "^1.0.4",
     "@radix-ui/react-aspect-ratio": "^1.0.3",
