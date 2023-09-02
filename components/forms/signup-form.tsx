@@ -20,11 +20,16 @@ import {
 import { Input } from "@/components/ui/input";
 import { Icons } from "@/components/icons";
 import { PasswordInput } from "@/components/password-input";
+import { cognitoClient } from "@/lib/aws/cognito";
+import { SignUpCommand } from "@aws-sdk/client-cognito-identity-provider";
+import { awsConfig } from "@/config/aws";
+import { useToast } from "@/components/ui/use-toast";
 
 type Inputs = z.infer<typeof signUpSchema>;
 
 export function SignUpForm() {
   const router = useRouter();
+  const { toast } = useToast();
   const [isPending, startTransition] = React.useTransition();
 
   // react-hook-form
@@ -39,10 +44,20 @@ export function SignUpForm() {
 
   function onSubmit(data: Inputs) {
     // if (!isLoaded) return;
-    console.log({ data });
 
     startTransition(async () => {
       try {
+        await cognitoClient.send(
+          new SignUpCommand({
+            ClientId: awsConfig.CLIENT_ID,
+            Username: data.email,
+            Password: data.password,
+          })
+        );
+        toast({
+          title: "Success",
+          description: "Check your email for a verification code.",
+        });
         router.push("/auth/signup/verify-email");
       } catch (ex) {
         console.log({ ex });

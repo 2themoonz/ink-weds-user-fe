@@ -20,6 +20,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Icons } from "@/components/icons";
+import { cognitoClient } from "@/lib/aws/cognito";
+import { ConfirmSignUpCommand } from "@aws-sdk/client-cognito-identity-provider";
+import { awsConfig } from "@/config/aws";
 
 type Inputs = z.infer<typeof verifyEmailSchema>;
 
@@ -41,18 +44,14 @@ export function VerifyEmailForm() {
 
     startTransition(async () => {
       try {
-        // const completeSignUp = await signUp.attemptEmailAddressVerification({
-        //   code: data.code,
-        // });
-        // if (completeSignUp.status !== "complete") {
-        //   /*  investigate the response, to see if there was an error
-        //      or if the user needs to complete more steps.*/
-        //   console.log(JSON.stringify(completeSignUp, null, 2));
-        // }
-        // if (completeSignUp.status === "complete") {
-        //   await setActive({ session: completeSignUp.createdSessionId });
-        //   router.push(`${window.location.origin}/`);
-        // }
+        await cognitoClient.send(
+          new ConfirmSignUpCommand({
+            ClientId: awsConfig.CLIENT_ID,
+            ConfirmationCode: data.code,
+            Username: "trungpq163@gmail.com",
+          })
+        );
+        router.push(`${window.location.origin}/`);
       } catch (err) {
         // catchClerkError(err);
       }
