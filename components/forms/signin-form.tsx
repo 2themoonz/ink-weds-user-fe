@@ -22,27 +22,9 @@ import { awsConfig } from "@/config/aws";
 import { cognitoClient } from "@/lib/aws/cognito";
 import { authSchema } from "@/lib/validations/auth";
 import { InitiateAuthCommand } from "@aws-sdk/client-cognito-identity-provider";
+import { toast } from "sonner";
 
 type Inputs = z.infer<typeof authSchema>;
-
-export const signIn = async (email: string, password: string) => {
-  try {
-    const res = await cognitoClient.send(
-      new InitiateAuthCommand({
-        AuthFlow: "USER_PASSWORD_AUTH",
-        ClientId: awsConfig.CLIENT_ID,
-        AuthParameters: {
-          USERNAME: email,
-          PASSWORD: password,
-        },
-      })
-    );
-
-    return res;
-  } catch (ex: any) {
-    console.error(ex);
-  }
-};
 
 export function SignInForm() {
   const router = useRouter();
@@ -59,12 +41,22 @@ export function SignInForm() {
   });
 
   function onSubmit(data: any) {
-    startTransition(() => {
-      signIn(data.email, data.password).then((res) => {
-        if (res?.AuthenticationResult) {
-          router.push("/");
-        }
-      });
+    startTransition(async () => {
+      try {
+        await cognitoClient.send(
+          new InitiateAuthCommand({
+            AuthFlow: "USER_PASSWORD_AUTH",
+            ClientId: awsConfig.CLIENT_ID,
+            AuthParameters: {
+              USERNAME: data?.email,
+              PASSWORD: data?.password,
+            },
+          })
+        );
+      } catch (ex: any) {
+        console.log("ex", ex);
+        toast.error(ex?.message);
+      }
     });
   }
 
