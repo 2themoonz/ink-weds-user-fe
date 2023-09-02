@@ -22,12 +22,13 @@ import { awsConfig } from "@/config/aws";
 import { cognitoClient } from "@/lib/aws/cognito";
 import { authSchema } from "@/lib/validations/auth";
 import { InitiateAuthCommand } from "@aws-sdk/client-cognito-identity-provider";
-import { toast } from "sonner";
+import { useToast } from "@/components/ui/use-toast";
 
 type Inputs = z.infer<typeof authSchema>;
 
 export function SignInForm() {
   const router = useRouter();
+  const { toast } = useToast();
   // const { isLoaded, signIn, setActive } = useSignIn();
   const [isPending, startTransition] = React.useTransition();
 
@@ -54,8 +55,11 @@ export function SignInForm() {
           })
         );
       } catch (ex: any) {
-        console.log("ex", ex);
-        toast.error(ex?.message);
+        toast({
+          title: "Error",
+          description: ex.message,
+          // status: "error",
+        });
       }
     });
   }
