@@ -23,6 +23,9 @@ import { cognitoClient } from "@/lib/aws/cognito";
 import { authSchema } from "@/lib/validations/auth";
 import { InitiateAuthCommand } from "@aws-sdk/client-cognito-identity-provider";
 import { useToast } from "@/components/ui/use-toast";
+import Cookies from "universal-cookie";
+
+const cookies = new Cookies();
 
 type Inputs = z.infer<typeof authSchema>;
 
@@ -44,7 +47,7 @@ export function SignInForm() {
   function onSubmit(data: any) {
     startTransition(async () => {
       try {
-        await cognitoClient.send(
+        const res = await cognitoClient.send(
           new InitiateAuthCommand({
             AuthFlow: "USER_PASSWORD_AUTH",
             ClientId: awsConfig.CLIENT_ID,
@@ -54,6 +57,29 @@ export function SignInForm() {
             },
           })
         );
+
+        const { AuthenticationResult } = res;
+
+        if (AuthenticationResult) {
+          const { AccessToken, IdToken, RefreshToken } = AuthenticationResult;
+
+          cookies.set("access_token", AccessToken, {
+            path: "/",
+            maxAge: 60 * 60 * 24 * 7,
+          });
+
+          cookies.set("id_token", IdToken, {
+            path: "/",
+            maxAge: 60 * 60 * 24 * 7,
+          });
+
+          cookies.set("refresh_token", RefreshToken, {
+            path: "/",
+            maxAge: 60 * 60 * 24 * 7,
+          });
+        }
+
+        router.push("/");
       } catch (ex: any) {
         toast({
           title: "Error",
